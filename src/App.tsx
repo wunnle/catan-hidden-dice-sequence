@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 
-function strToSeed(str) {
+function strToSeed(str: string): () => number {
   let h = 1779033703 ^ str.length;
   for (let i = 0; i < str.length; i++) {
     h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
@@ -14,7 +14,7 @@ function strToSeed(str) {
   };
 }
 
-function mulberry32(seed) {
+function mulberry32(seed: number): () => number {
   return function () {
     let t = (seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -23,13 +23,13 @@ function mulberry32(seed) {
   };
 }
 
-function makeRngFromSeedString(seedStr) {
+function makeRngFromSeedString(seedStr: string): () => number {
   const seedFn = strToSeed(seedStr || "default-seed");
   const seed = seedFn();
   return mulberry32(seed);
 }
 
-function rollDicePair(rng) {
+function rollDicePair(rng: () => number): [number, number] {
   const d6 = () => Math.floor(rng() * 6) + 1;
   return [d6(), d6()];
 }
@@ -42,13 +42,13 @@ export default function PreGeneratedCatanDice() {
   const [showCounts, setShowCounts] = useState(false); // toggle to SHOW counts
 
   // Pre-generate full sequence
-  const sequence = useMemo(() => {
+  const sequence = useMemo<[number, number][]>(() => {
     const rng = makeRngFromSeedString(seed + "|" + turns);
     return Array.from({ length: turns }, () => rollDicePair(rng));
   }, [seed, turns]);
 
   // Distribution of sums
-  const distribution = useMemo(() => {
+  const distribution = useMemo<Record<number, number>>(() => {
     const counts = Object.fromEntries(Array.from({ length: 11 }, (_, i) => [i + 2, 0]));
     sequence.forEach(([a, b]) => (counts[a + b] += 1));
     return counts;
