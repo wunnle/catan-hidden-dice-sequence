@@ -1,4 +1,4 @@
-# Catan — Hidden Pre‑Generated Dice
+# Deterministic Catan - Catan variant with hidden Pre‑Generated Dice
 
 A tiny web app for a Catan variant where all dice results are pre‑generated and hidden. Players see the distribution for N turns to inform initial placement, then press **Roll** each turn to reveal the next result.
 
